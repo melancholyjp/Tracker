@@ -15,6 +15,7 @@ final class TrackerScreenViewController: UIViewController {
     private var searchBar: UISearchBar?
     private var stubImageView: UIImageView?
     private var stubLabel: UILabel?
+    private var trackerCollectionView: UICollectionView?
     
     // MARK: - Properties
     
@@ -25,6 +26,10 @@ final class TrackerScreenViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        
         
         setupViewsAndConstraints()
     }
@@ -37,7 +42,8 @@ final class TrackerScreenViewController: UIViewController {
         trackerLabel: UILabel,
         searchBar: UISearchBar,
         stubImageView: UIImageView,
-        stubLabel: UILabel
+        stubLabel: UILabel,
+        collectionView: UICollectionView
     ) {
         NSLayoutConstraint.activate([
             
@@ -69,7 +75,11 @@ final class TrackerScreenViewController: UIViewController {
             
             // stubLabel
             stubLabel.topAnchor.constraint(equalTo: stubImageView.bottomAnchor, constant: 12),
-            stubLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            stubLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            // trackerCollectionView
+            
+            
         ])
     }
     
@@ -80,17 +90,19 @@ final class TrackerScreenViewController: UIViewController {
         searchBar = createSearchBar()
         stubImageView = createStubImageView()
         stubLabel = createStubLabel()
+        trackerCollectionView = createCollectionView()
         
         guard let addTrackerButton,
               let datePicker,
               let trackerLabel,
               let searchBar,
               let stubImageView,
-              let stubLabel else {
+              let stubLabel,
+              let trackerCollectionView else {
             return
         }
         
-        [addTrackerButton, datePicker, trackerLabel, searchBar, stubImageView, stubLabel].forEach {
+        [addTrackerButton, datePicker, trackerLabel, searchBar, stubImageView, stubLabel, trackerCollectionView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -101,11 +113,14 @@ final class TrackerScreenViewController: UIViewController {
             trackerLabel: trackerLabel,
             searchBar: searchBar,
             stubImageView: stubImageView,
-            stubLabel: stubLabel
+            stubLabel: stubLabel,
+            collectionView: trackerCollectionView
         )
         
         view.backgroundColor = UIColor(named: "White [iOS]")
     }
+    
+    // MARK: - Create Views
     
     private func createAddTrackerButton() -> UIButton {
         let addTrackerButton = UIButton.systemButton(
@@ -125,6 +140,7 @@ final class TrackerScreenViewController: UIViewController {
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         
         return datePicker
     }
@@ -170,9 +186,39 @@ final class TrackerScreenViewController: UIViewController {
         return stubLabel
     }
     
+    private func createCollectionView() -> UICollectionView {
+        let collectionView: UICollectionView = {
+            let collectionView = UICollectionView(
+                frame: .zero,
+                collectionViewLayout: UICollectionViewFlowLayout()
+            )
+            
+            collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: "TrackerCollectionCell")
+            return collectionView
+        }()
+        
+        collectionView.register(CategoryHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CategoryHeaderView.reuseIdentifier)
+        
+        return collectionView
+    }
+    
     // MARK: - Private Actions
     
     @objc private func addTrackersButtonTapped() {
         // TODO: - Code
     }
+    
+    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+        let selectedDate = sender.date
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        let formattedDate = dateFormatter.string(from: selectedDate)
+        print("Selected date: \(formattedDate)")
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension TrackerScreenViewController: UICollectionViewDelegateFlowLayout {
+    
 }
