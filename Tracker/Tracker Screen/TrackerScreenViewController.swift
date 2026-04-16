@@ -33,8 +33,6 @@ final class TrackerScreenViewController: UIViewController {
         
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        
-        
         setupViewsAndConstraints()
     }
     
