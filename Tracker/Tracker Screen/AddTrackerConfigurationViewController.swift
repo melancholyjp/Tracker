@@ -318,7 +318,15 @@ final class AddTrackerConfigurationViewController: UIViewController {
     }
 
     @objc private func createTrackerButtonDidTapped(_ sender: UIButton) {
-        // TODO
+        let tracker = Tracker(
+            id: UUID(),
+            title: trackerNameField.text ?? "",
+            color: .systemBlue,
+            emoji: "🙂",
+            shedule: selectedDays.map { $0.rawValue }
+        )
+    
+        print("Трекер получен: \(tracker)")
     }
 
     @objc private func textDidChanged() {
