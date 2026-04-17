@@ -15,7 +15,7 @@ final class AddTrackerConfigurationViewController: UIViewController {
 
     private lazy var categoryRow: UIView = makeSimpleRow(title: "Категория")
     private var selectedDays: [SheduleDaysPicker.WeekDay] = []
-    private var trackerScreen: TrackerScreenProtocol?
+    weak var delegate: TrackerScreenProtocol?
 
     private let limitLabel: UILabel = {
         let label = UILabel()
@@ -139,7 +139,6 @@ final class AddTrackerConfigurationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        trackerScreen = TrackerScreenViewController()
         
         view.backgroundColor = .white
 
@@ -330,10 +329,11 @@ final class AddTrackerConfigurationViewController: UIViewController {
             emoji: "🙂",
             shedule: selectedDays.map { $0.rawValue }
         )
-
-        trackerScreen?.newTrackerAdded(tracker)
+        
+        delegate?.newTrackerAdded(tracker)
         dismiss(animated: true)
     }
+    
     @objc private func textDidChanged() {
         let count = trackerNameField.text?.count ?? 0
         let newState = count >= maxNameLength
