@@ -21,6 +21,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
 
     private let daysLabel = UILabel()
     private let addButton = UIButton(type: .system)
+    
+    var onActionTap: (() -> Void)?
 
     // MARK: - Init
 
@@ -101,6 +103,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         addButton.setImage(image, for: .normal)
         addButton.tintColor = .white
         addButton.titleLabel?.font = .systemFont(ofSize: 28, weight: .regular)
+        addButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
 
         // Hierarchy
         contentView.addSubview(containerView)
@@ -189,5 +192,14 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         default:
             return "\(days) дней"
         }
+    }
+    
+    func setActionEnabled(_ enabled: Bool) {
+        addButton.isEnabled = enabled
+        addButton.alpha = enabled ? 1.0 : 0.4
+    }
+    
+    @objc private func buttonTapped() {
+        onActionTap?()
     }
 }

@@ -10,9 +10,9 @@ protocol TrackerScreenProtocol: AnyObject {
 }
 
 final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol {
-
+    
     // MARK: - Views
-
+    
     private var addTrackerButton: UIButton?
     private var datePicker: UIDatePicker?
     private var trackerLabel: UILabel?
@@ -22,21 +22,21 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
     private var trackerCollectionView: UICollectionView?
     
     //MARK: - Properties
-
+    
     private var searchText: String = ""
     private var selectedDate: Date = Date()
     private var records: [UUID: TrackerRecord] = [:]
-
+    
     // MARK: - Categories
-
+    
     var categories: [TrackerCategory] = [
         TrackerCategory(title: "Домашний уют", trackers: []),
         TrackerCategory(title: "Здоровье", trackers: []),
         TrackerCategory(title: "Работа", trackers: [])
     ]
-
+    
     // MARK: - Fillter
-
+    
     private var displayedCategories: [TrackerCategory] {
         let filtered = categories.map { category in
             let trackers = category.trackers.filter {
@@ -45,23 +45,23 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
             }
             return TrackerCategory(title: category.title, trackers: trackers)
         }
-
+        
         return filtered.filter { !$0.trackers.isEmpty }
     }
-
+    
     // MARK: - Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         navigationController?.setNavigationBarHidden(true, animated: false)
-
+        
         setupViewsAndConstraints()
         updateEmptyState()
     }
-
+    
     // MARK: - Setup
-
+    
     private func setupViewsAndConstraints() {
         addTrackerButton = createAddTrackerButton()
         datePicker = createDatePicker()
@@ -70,7 +70,7 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
         stubImageView = createStubImageView()
         stubLabel = createStubLabel()
         trackerCollectionView = createCollectionView()
-
+        
         guard let addTrackerButton,
               let datePicker,
               let trackerLabel,
@@ -80,13 +80,13 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
               let trackerCollectionView else {
             return
         }
-
+        
         [addTrackerButton, datePicker, trackerLabel, searchBar, stubImageView, stubLabel, trackerCollectionView]
             .forEach {
                 $0.translatesAutoresizingMaskIntoConstraints = false
                 view.addSubview($0)
             }
-
+        
         setupConstraints(
             addTrackerButton: addTrackerButton,
             datePicker: datePicker,
@@ -96,10 +96,10 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
             stubLabel: stubLabel,
             trackerCollectionView: trackerCollectionView
         )
-
+        
         view.backgroundColor = UIColor(named: "White [iOS]")
     }
-
+    
     private func setupConstraints(
         addTrackerButton: UIButton,
         datePicker: UIDatePicker,
@@ -114,35 +114,35 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
             addTrackerButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             addTrackerButton.widthAnchor.constraint(equalToConstant: 42),
             addTrackerButton.heightAnchor.constraint(equalToConstant: 42),
-
+            
             datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             datePicker.centerYAnchor.constraint(equalTo: addTrackerButton.centerYAnchor),
-
+            
             trackerLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 26),
             trackerLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             trackerLabel.topAnchor.constraint(equalTo: addTrackerButton.bottomAnchor, constant: 12),
-
+            
             searchBar.topAnchor.constraint(equalTo: trackerLabel.bottomAnchor, constant: 7),
             searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-
+            
             stubImageView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 220),
             stubImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stubImageView.widthAnchor.constraint(equalToConstant: 80),
             stubImageView.heightAnchor.constraint(equalToConstant: 80),
-
+            
             stubLabel.topAnchor.constraint(equalTo: stubImageView.bottomAnchor, constant: 12),
             stubLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
+            
             trackerCollectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 32),
             trackerCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             trackerCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             trackerCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
     }
-
+    
     // MARK: - Create Views
-
+    
     private func createAddTrackerButton() -> UIButton {
         let button = UIButton.systemButton(
             with: UIImage(named: "AddTrackersButton") ?? UIImage(),
@@ -152,7 +152,7 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
         button.tintColor = UIColor(named: "Black [iOS]")
         return button
     }
-
+    
     private func createDatePicker() -> UIDatePicker {
         let picker = UIDatePicker()
         picker.datePickerMode = .date
@@ -161,7 +161,7 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
         picker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         return picker
     }
-
+    
     private func createTrackerLabel() -> UILabel {
         let label = UILabel()
         label.text = "Трекеры"
@@ -169,7 +169,7 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
         label.textColor = UIColor(named: "Black [iOS]")
         return label
     }
-
+    
     private func createSearchBar() -> UISearchBar {
         let searchBar = UISearchBar()
         searchBar.searchBarStyle = .minimal
@@ -180,11 +180,11 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
         searchBar.autocapitalizationType = .none
         return searchBar
     }
-
+    
     private func createStubImageView() -> UIImageView {
         UIImageView(image: UIImage(named: "TrackerMainscreenStubImage"))
     }
-
+    
     private func createStubLabel() -> UILabel {
         let label = UILabel()
         label.text = "Что будем отслеживать?"
@@ -192,59 +192,59 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
         label.textColor = UIColor(named: "Black [iOS]")
         return label
     }
-
+    
     private func createCollectionView() -> UICollectionView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 12
         layout.minimumLineSpacing = 12
         layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-
+        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-
+        
         collectionView.register(
             TrackerCollectionViewCell.self,
             forCellWithReuseIdentifier: TrackerCollectionViewCell.reuseIdentifier
         )
-
+        
         collectionView.register(
             CategoryHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: CategoryHeaderView.reuseIdentifier
         )
-
+        
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceVertical = true
-
+        
         return collectionView
     }
-
+    
     // MARK: - Add Tracker
-
+    
     func newTrackerAdded(_ tracker: Tracker) {
-
+        
         let randomIndex = Int.random(in: 0..<categories.count)
-
+        
         let wasEmpty = categories[randomIndex].trackers.isEmpty
         categories[randomIndex].trackers.append(tracker)
-
+        
         trackerCollectionView?.reloadData()
-
+        
         updateEmptyState()
     }
-
+    
     // MARK: - Empty State
-
+    
     private func updateEmptyState() {
-
+        
         let hasTrackers = categories.contains { !$0.trackers.isEmpty }
-
+        
         stubImageView?.isHidden = hasTrackers
         stubLabel?.isHidden = hasTrackers
         trackerCollectionView?.isHidden = !hasTrackers
-
+        
         if hasTrackers {
             view.bringSubviewToFront(trackerCollectionView!)
         } else {
@@ -252,16 +252,67 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
             view.bringSubviewToFront(stubLabel!)
         }
     }
-
+    
+    // MARK: - onDateToggle
+    
+    private func normalizedDate(_ date: Date) -> Date {
+        Calendar.current.startOfDay(for: date)
+    }
+    
+    private func isCompleted(_ tracker: Tracker) -> Bool {
+        let key = dateKey(selectedDate)
+        return records[tracker.id]?.completedDates.contains(key) ?? false
+    }
+    
+    private func toggleTracker(_ tracker: Tracker) {
+        
+        let today = Calendar.current.startOfDay(for: Date())
+        let selected = Calendar.current.startOfDay(for: selectedDate)
+        guard selected <= today else { return }
+        
+        let key = dateKey(selectedDate)
+        
+        if var record = records[tracker.id] {
+            
+            if record.completedDates.contains(key) {
+                record.completedDates.remove(key)
+            } else {
+                record.completedDates.insert(key)
+            }
+            
+            records[tracker.id] = record
+            
+        } else {
+            records[tracker.id] = TrackerRecord(
+                id: tracker.id,
+                completedDates: [key]
+            )
+        }
+        
+        trackerCollectionView?.reloadData()
+    }
+    
+    private func dateKey(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
+    
     // MARK: - Actions
-
+    
     @objc private func addTrackersButtonTapped() {
         let vc = AddTrackerConfigurationViewController()
         vc.delegate = self
         present(vc, animated: true)
     }
-
-    @objc private func datePickerValueChanged(_ sender: UIDatePicker) {}
+    
+    @objc private func datePickerValueChanged(_ sender: UIDatePicker) {
+        selectedDate = sender.date
+        trackerCollectionView?.reloadData()
+    }
 }
 
 // MARK: - Search
@@ -312,8 +363,22 @@ extension TrackerScreenViewController: UICollectionViewDataSource {
         cell.configure(
             emoji: tracker.emoji,
             title: tracker.title,
-            color: tracker.color
+            color: tracker.color,
+            days: records[tracker.id]?.completedDates.count ?? 0
         )
+
+        cell.setCompleted(isCompleted(tracker))
+        
+        let today = Calendar.current.startOfDay(for: Date())
+        let selected = Calendar.current.startOfDay(for: selectedDate)
+
+        let isFuture = selected > today
+        cell.setActionEnabled(!isFuture)
+        
+        cell.onActionTap = { [weak self] in
+                guard let self else { return }
+                self.toggleTracker(tracker)
+            }
 
         return cell
     }
