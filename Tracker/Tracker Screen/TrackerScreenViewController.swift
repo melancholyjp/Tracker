@@ -25,7 +25,7 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
     
     private var searchText: String = ""
     private var selectedDate: Date = Date()
-    private var records: [UUID: TrackerRecord] = [:]
+    private var completedTrackers: [TrackerRecord] = []
     
     // MARK: - Categories
     
@@ -56,6 +56,9 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
 
             return TrackerCategory(title: category.title, trackers: trackers)
         }
+        
+        print("filtered (до фильтра по пустым трекерам): \(filtered)")
+            print("filtered с tracker.count: \(filtered.map { "\($0.title): \($0.trackers.count)" })")
 
         return filtered.filter { !$0.trackers.isEmpty }
     }
@@ -235,14 +238,18 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
     // MARK: - Add Tracker
     
     func newTrackerAdded(_ tracker: Tracker) {
-        
         let randomIndex = Int.random(in: 0..<categories.count)
         
-        let wasEmpty = categories[randomIndex].trackers.isEmpty
-        categories[randomIndex].trackers.append(tracker)
+        // Создаём новую категорию с добавленным трекером
+        let newTrackers = categories[randomIndex].trackers + [tracker]
+        let newCategory = TrackerCategory(
+            title: categories[randomIndex].title,
+            trackers: newTrackers
+        )
+        
+        categories[randomIndex] = newCategory
         
         trackerCollectionView?.reloadData()
-        
         updateEmptyState()
     }
     
@@ -276,34 +283,28 @@ final class TrackerScreenViewController: UIViewController, TrackerScreenProtocol
     
     private func isCompleted(_ tracker: Tracker) -> Bool {
         let key = dateKey(selectedDate)
-        return records[tracker.id]?.completedDates.contains(key) ?? false
+        return completedTrackers.contains { $0.trackerId == tracker.id && $0.date == key }
     }
     
     private func toggleTracker(_ tracker: Tracker) {
-        
         let today = Calendar.current.startOfDay(for: Date())
         let selected = Calendar.current.startOfDay(for: selectedDate)
         guard selected <= today else { return }
-        
+
         let key = dateKey(selectedDate)
-        
-        if var record = records[tracker.id] {
-            
-            if record.completedDates.contains(key) {
-                record.completedDates.remove(key)
-            } else {
-                record.completedDates.insert(key)
-            }
-            
-            records[tracker.id] = record
-            
+
+        if let index = completedTrackers.firstIndex(where: { $0.trackerId == tracker.id && $0.date == key }) {
+            // Удаляем дату (уже отмечено как завершённое)
+            completedTrackers.remove(at: index)
         } else {
-            records[tracker.id] = TrackerRecord(
-                id: tracker.id,
-                completedDates: [key]
+            // Добавляем дату как завершённую
+            let newRecord = TrackerRecord(
+                trackerId: tracker.id,
+                date: key
             )
+            completedTrackers.append(newRecord)
         }
-        
+
         trackerCollectionView?.reloadData()
     }
     
@@ -375,12 +376,13 @@ extension TrackerScreenViewController: UICollectionViewDataSource {
 
         let category = displayedCategories[indexPath.section]
         let tracker = category.trackers[indexPath.item]
-
+        let days = completedTrackers.count { $0.trackerId == tracker.id }
+        
         cell.configure(
             emoji: tracker.emoji,
             title: tracker.title,
             color: tracker.color,
-            days: records[tracker.id]?.completedDates.count ?? 0
+            days: days
         )
 
         cell.setCompleted(isCompleted(tracker))
