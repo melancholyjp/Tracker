@@ -398,9 +398,9 @@ extension TrackerScreenViewController: UICollectionViewDataSource {
         cell.setActionEnabled(!isFuture)
         
         cell.onActionTap = { [weak self] in
-                guard let self else { return }
-                self.toggleTracker(tracker)
-            }
+            guard let self else { return }
+            self.toggleTracker(tracker)
+        }
 
         return cell
     }
