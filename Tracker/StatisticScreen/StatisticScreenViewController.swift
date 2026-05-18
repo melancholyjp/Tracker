@@ -35,7 +35,7 @@ final class StatisticScreenViewController: UIViewController {
     private let stubLabel: UILabel = {
         let label = UILabel()
         
-        label.text = NSLocalizedString("Анализировать пока нечего", comment: "Statistic")
+        label.text = NSLocalizedString("statisric_screen_stub", comment: "Statistic")
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -116,7 +116,7 @@ extension StatisticScreenViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        cell.configure(number: trackerCount, title: "Лучший период")
+        cell.configure(number: trackerCount, title: NSLocalizedString("the_best_period", comment: "The best period."))
         
         return cell
     }
