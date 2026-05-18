@@ -19,16 +19,16 @@ final class TabBarController: UITabBarController {
     
     private func configureTabs() {
         let trackerTab = UINavigationController(rootViewController: TrackerScreenViewController())
-        let statisticTab = UINavigationController(rootViewController: StatisticVewController())
+        let statisticTab = UINavigationController(rootViewController: StatisticScreenViewController())
         
         trackerTab.tabBarItem = UITabBarItem(
-            title: "Трекеры",
+            title: NSLocalizedString("trackers", comment: "Trackers"),
             image: UIImage(named: "TrackerTabBarIcon"),
             tag: 0
         )
         
         statisticTab.tabBarItem = UITabBarItem(
-            title: "Статистика",
+            title: NSLocalizedString("statistics", comment: "Statistics"),
             image: UIImage(named: "StatisticTabBarIcon"),
             tag: 1
         )
